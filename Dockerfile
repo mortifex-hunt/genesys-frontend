@@ -21,6 +21,9 @@ COPY package*.json ./
 RUN npm ci --only=production
 
 COPY --from=builder /app/build ./build
+RUN mkdir -p /app/build/server/chunks && \
+    ln -s /app/build/client /app/build/server/chunks/client && \
+    ln -s /app/build/prerendered /app/build/server/chunks/prerendered
 
 EXPOSE 8080
 
