@@ -79,15 +79,48 @@
 		{ name: "", skill: "", damage: "", crit: "", range: "", special: "" },
 	]);
 	let armors = $state<ArmorItem[]>([
-		{ name: "", defense: "", soak: "", encumbrance: "", hardPoints: "", special: "" },
-		{ name: "", defense: "", soak: "", encumbrance: "", hardPoints: "", special: "" },
-		{ name: "", defense: "", soak: "", encumbrance: "", hardPoints: "", special: "" },
+		{
+			name: "",
+			defense: "",
+			soak: "",
+			encumbrance: "",
+			hardPoints: "",
+			special: "",
+		},
+		{
+			name: "",
+			defense: "",
+			soak: "",
+			encumbrance: "",
+			hardPoints: "",
+			special: "",
+		},
+		{
+			name: "",
+			defense: "",
+			soak: "",
+			encumbrance: "",
+			hardPoints: "",
+			special: "",
+		},
 	]);
 
 	let activeTab = $state<"main" | "details">("main");
 	let motivations = $state({ strength: "", flaw: "", desire: "", fear: "" });
-	let description = $state({ gender: "", age: "", height: "", build: "", hair: "", eyes: "", notableFeatures: "" });
-	let equipment = $state({ money: "", weaponsAndArmor: "", personalGear: "" });
+	let description = $state({
+		gender: "",
+		age: "",
+		height: "",
+		build: "",
+		hair: "",
+		eyes: "",
+		notableFeatures: "",
+	});
+	let equipment = $state({
+		money: "",
+		weaponsAndArmor: "",
+		personalGear: "",
+	});
 	let notes = $state("");
 	let criticalInjuries = $state<any[]>([]);
 	let talents = $state<any[]>([]);
@@ -202,7 +235,9 @@
 
 	// API and list states
 	let apiBase = $state(
-		env.PUBLIC_BACKEND_URL ? `${env.PUBLIC_BACKEND_URL}/api` : "http://localhost:3000/api"
+		env.PUBLIC_BACKEND_URL
+			? `${env.PUBLIC_BACKEND_URL}/api`
+			: "http://localhost:3000/api",
 	);
 	let charactersList = $state<any[]>([]);
 	let availableWeapons = $state<WeaponItem[]>([]);
@@ -416,18 +451,77 @@
 					presence = data.presence ?? 2;
 					skills = ensureSkillsArray(data.skills);
 					weapons = data.weapons || [
-						{ name: "", skill: "", damage: "", crit: "", range: "", special: "" },
-						{ name: "", skill: "", damage: "", crit: "", range: "", special: "" },
-						{ name: "", skill: "", damage: "", crit: "", range: "", special: "" },
+						{
+							name: "",
+							skill: "",
+							damage: "",
+							crit: "",
+							range: "",
+							special: "",
+						},
+						{
+							name: "",
+							skill: "",
+							damage: "",
+							crit: "",
+							range: "",
+							special: "",
+						},
+						{
+							name: "",
+							skill: "",
+							damage: "",
+							crit: "",
+							range: "",
+							special: "",
+						},
 					];
 					armors = data.armors || [
-						{ name: "", defense: "", soak: "", encumbrance: "", hardPoints: "", special: "" },
-						{ name: "", defense: "", soak: "", encumbrance: "", hardPoints: "", special: "" },
-						{ name: "", defense: "", soak: "", encumbrance: "", hardPoints: "", special: "" },
+						{
+							name: "",
+							defense: "",
+							soak: "",
+							encumbrance: "",
+							hardPoints: "",
+							special: "",
+						},
+						{
+							name: "",
+							defense: "",
+							soak: "",
+							encumbrance: "",
+							hardPoints: "",
+							special: "",
+						},
+						{
+							name: "",
+							defense: "",
+							soak: "",
+							encumbrance: "",
+							hardPoints: "",
+							special: "",
+						},
 					];
-					motivations = data.motivations || { strength: "", flaw: "", desire: "", fear: "" };
-					description = data.description || { gender: "", age: "", height: "", build: "", hair: "", eyes: "", notableFeatures: "" };
-					equipment = data.equipment || { money: "", weaponsAndArmor: "", personalGear: "" };
+					motivations = data.motivations || {
+						strength: "",
+						flaw: "",
+						desire: "",
+						fear: "",
+					};
+					description = data.description || {
+						gender: "",
+						age: "",
+						height: "",
+						build: "",
+						hair: "",
+						eyes: "",
+						notableFeatures: "",
+					};
+					equipment = data.equipment || {
+						money: "",
+						weaponsAndArmor: "",
+						personalGear: "",
+					};
 					notes = data.notes || "";
 					criticalInjuries = data.criticalInjuries || [];
 					talents = data.talents || [];
@@ -473,18 +567,77 @@
 					presence = char.presence ?? 2;
 					skills = ensureSkillsArray(char.skills);
 					weapons = char.weapons || [
-						{ name: "", skill: "", damage: "", crit: "", range: "", special: "" },
-						{ name: "", skill: "", damage: "", crit: "", range: "", special: "" },
-						{ name: "", skill: "", damage: "", crit: "", range: "", special: "" },
+						{
+							name: "",
+							skill: "",
+							damage: "",
+							crit: "",
+							range: "",
+							special: "",
+						},
+						{
+							name: "",
+							skill: "",
+							damage: "",
+							crit: "",
+							range: "",
+							special: "",
+						},
+						{
+							name: "",
+							skill: "",
+							damage: "",
+							crit: "",
+							range: "",
+							special: "",
+						},
 					];
 					armors = char.armors || [
-						{ name: "", defense: "", soak: "", encumbrance: "", hardPoints: "", special: "" },
-						{ name: "", defense: "", soak: "", encumbrance: "", hardPoints: "", special: "" },
-						{ name: "", defense: "", soak: "", encumbrance: "", hardPoints: "", special: "" },
+						{
+							name: "",
+							defense: "",
+							soak: "",
+							encumbrance: "",
+							hardPoints: "",
+							special: "",
+						},
+						{
+							name: "",
+							defense: "",
+							soak: "",
+							encumbrance: "",
+							hardPoints: "",
+							special: "",
+						},
+						{
+							name: "",
+							defense: "",
+							soak: "",
+							encumbrance: "",
+							hardPoints: "",
+							special: "",
+						},
 					];
-					motivations = char.motivations || { strength: "", flaw: "", desire: "", fear: "" };
-					description = char.description || { gender: "", age: "", height: "", build: "", hair: "", eyes: "", notableFeatures: "" };
-					equipment = char.equipment || { money: "", weaponsAndArmor: "", personalGear: "" };
+					motivations = char.motivations || {
+						strength: "",
+						flaw: "",
+						desire: "",
+						fear: "",
+					};
+					description = char.description || {
+						gender: "",
+						age: "",
+						height: "",
+						build: "",
+						hair: "",
+						eyes: "",
+						notableFeatures: "",
+					};
+					equipment = char.equipment || {
+						money: "",
+						weaponsAndArmor: "",
+						personalGear: "",
+					};
 					notes = char.notes || "";
 					criticalInjuries = char.criticalInjuries || [];
 					talents = char.talents || [];
@@ -607,17 +760,60 @@
 				},
 			];
 			armors = [
-				{ name: "", defense: "", soak: "", encumbrance: "", hardPoints: "", special: "" },
-				{ name: "", defense: "", soak: "", encumbrance: "", hardPoints: "", special: "" },
-				{ name: "", defense: "", soak: "", encumbrance: "", hardPoints: "", special: "" },
+				{
+					name: "",
+					defense: "",
+					soak: "",
+					encumbrance: "",
+					hardPoints: "",
+					special: "",
+				},
+				{
+					name: "",
+					defense: "",
+					soak: "",
+					encumbrance: "",
+					hardPoints: "",
+					special: "",
+				},
+				{
+					name: "",
+					defense: "",
+					soak: "",
+					encumbrance: "",
+					hardPoints: "",
+					special: "",
+				},
 			];
-			motivations = { strength: "Brave", flaw: "Reckless", desire: "Wealth", fear: "Poverty" };
-			description = { gender: "Male", age: "28", height: "1.85m", build: "Athletic", hair: "Brown", eyes: "Green", notableFeatures: "Scar on cheek" };
-			equipment = { money: "1500 credits", weaponsAndArmor: "Heavy Blaster, Padded Armor", personalGear: "Comlink, Datapad" };
+			motivations = {
+				strength: "Brave",
+				flaw: "Reckless",
+				desire: "Wealth",
+				fear: "Poverty",
+			};
+			description = {
+				gender: "Male",
+				age: "28",
+				height: "1.85m",
+				build: "Athletic",
+				hair: "Brown",
+				eyes: "Green",
+				notableFeatures: "Scar on cheek",
+			};
+			equipment = {
+				money: "1500 credits",
+				weaponsAndArmor: "Heavy Blaster, Padded Armor",
+				personalGear: "Comlink, Datapad",
+			};
 			notes = "Always shoots first.";
 			criticalInjuries = [];
 			talents = [
-				{ name: "Quick Draw", page: "135", summary: "Once per round, draw or holster a weapon or accessible item as an incidental." }
+				{
+					name: "Quick Draw",
+					page: "135",
+					summary:
+						"Once per round, draw or holster a weapon or accessible item as an incidental.",
+				},
 			];
 			selectedId = "default-char";
 			await tick();
@@ -764,12 +960,41 @@
 			},
 		];
 		armors = [
-			{ name: "", defense: "", soak: "", encumbrance: "", hardPoints: "", special: "" },
-			{ name: "", defense: "", soak: "", encumbrance: "", hardPoints: "", special: "" },
-			{ name: "", defense: "", soak: "", encumbrance: "", hardPoints: "", special: "" },
+			{
+				name: "",
+				defense: "",
+				soak: "",
+				encumbrance: "",
+				hardPoints: "",
+				special: "",
+			},
+			{
+				name: "",
+				defense: "",
+				soak: "",
+				encumbrance: "",
+				hardPoints: "",
+				special: "",
+			},
+			{
+				name: "",
+				defense: "",
+				soak: "",
+				encumbrance: "",
+				hardPoints: "",
+				special: "",
+			},
 		];
 		motivations = { strength: "", flaw: "", desire: "", fear: "" };
-		description = { gender: "", age: "", height: "", build: "", hair: "", eyes: "", notableFeatures: "" };
+		description = {
+			gender: "",
+			age: "",
+			height: "",
+			build: "",
+			hair: "",
+			eyes: "",
+			notableFeatures: "",
+		};
 		equipment = { money: "", weaponsAndArmor: "", personalGear: "" };
 		notes = "";
 		criticalInjuries = [];
@@ -814,7 +1039,7 @@
 					return;
 				}
 			} catch (e) {
-				console.error("Delete character from backend failed", e);
+				console.error("Delete character from backend failed...", e);
 			}
 		}
 
@@ -849,7 +1074,8 @@
 
 		if (typeof window !== "undefined") {
 			const hostname = window.location.hostname;
-			const backendUrl = env.PUBLIC_BACKEND_URL || `http://${hostname}:3000`;
+			const backendUrl =
+				env.PUBLIC_BACKEND_URL || `http://${hostname}:3000`;
 			apiBase = `${backendUrl}/api`;
 
 			// Initialize socket connection
@@ -892,7 +1118,8 @@
 				if (data.description) description = data.description;
 				if (data.equipment) equipment = data.equipment;
 				if (data.notes !== undefined) notes = data.notes;
-				if (data.criticalInjuries) criticalInjuries = data.criticalInjuries;
+				if (data.criticalInjuries)
+					criticalInjuries = data.criticalInjuries;
 				if (data.talents) talents = data.talents;
 				await tick();
 				updatingFromServer = false;
@@ -972,7 +1199,22 @@
 	let debounceTimeout: any;
 	$effect(() => {
 		// Deep watch skills object using stringify
-		const _tracker = JSON.stringify(skills) + JSON.stringify(weapons) + JSON.stringify(armors) + JSON.stringify(motivations) + JSON.stringify(description) + JSON.stringify(equipment) + JSON.stringify(criticalInjuries) + JSON.stringify(talents) + notes + brawn + agility + intellect + cunning + willpower + presence;
+		const _tracker =
+			JSON.stringify(skills) +
+			JSON.stringify(weapons) +
+			JSON.stringify(armors) +
+			JSON.stringify(motivations) +
+			JSON.stringify(description) +
+			JSON.stringify(equipment) +
+			JSON.stringify(criticalInjuries) +
+			JSON.stringify(talents) +
+			notes +
+			brawn +
+			agility +
+			intellect +
+			cunning +
+			willpower +
+			presence;
 
 		const state = {
 			id: characterId,
@@ -1187,11 +1429,21 @@
 	</section>
 
 	<div class="tabs-container">
-		<button type="button" class="tab-btn" class:active={activeTab === 'main'} onclick={() => activeTab = 'main'}>Main Sheet</button>
-		<button type="button" class="tab-btn" class:active={activeTab === 'details'} onclick={() => activeTab = 'details'}>Details & Gear</button>
+		<button
+			type="button"
+			class="tab-btn"
+			class:active={activeTab === "main"}
+			onclick={() => (activeTab = "main")}>Main Sheet</button
+		>
+		<button
+			type="button"
+			class="tab-btn"
+			class:active={activeTab === "details"}
+			onclick={() => (activeTab = "details")}>Details & Gear</button
+		>
 	</div>
 
-	{#if activeTab === 'main'}
+	{#if activeTab === "main"}
 		<section class="demo-section">
 			<!-- The Genesys CharacterHeader component -->
 			<CharacterHeader
@@ -1204,7 +1456,11 @@
 
 		<!-- Derived Attribute StatBlocks Row -->
 		<section class="stats-row">
-			<StatBlock title="SOAK VALUE" type="single" bind:value={soakValue} />
+			<StatBlock
+				title="SOAK VALUE"
+				type="single"
+				bind:value={soakValue}
+			/>
 			<StatBlock
 				title="WOUNDS"
 				type="dual"
@@ -1245,7 +1501,11 @@
 		<SkillsSheet bind:skills />
 
 		<!-- Weapons Section -->
-		<WeaponsBlock bind:weapons {availableWeapons} onAddWeapon={handleAddWeapon} />
+		<WeaponsBlock
+			bind:weapons
+			{availableWeapons}
+			onAddWeapon={handleAddWeapon}
+		/>
 
 		<!-- Armor Section -->
 		<ArmorBlock bind:armors {availableArmor} onAddArmor={handleAddArmor} />
