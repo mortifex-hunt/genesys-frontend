@@ -78,7 +78,9 @@
 	</div>
 
 	<div class="weapons-block">
-		<!-- Column Headers -->
+		<!-- Table Scroll Wrapper -->
+		<div class="table-scroll-wrapper">
+			<!-- Column Headers -->
 		<div class="weapons-header-row">
 			<div class="col-lbl left-align">ARMOR</div>
 			<div></div>
@@ -97,68 +99,69 @@
 
 		<!-- Rows -->
 		<div class="weapons-body">
-			{#each armors as a, i}
-				<div class="weapon-row">
-					<div class="weapon-cell left">
-						<select
-							value={a.id || ""}
-							onchange={(e) => {
-								const selectedId = e.currentTarget.value;
-								const selected = availableArmor.find(
-									(aa) => aa.id === selectedId,
-								);
-								if (selected) {
-									armors[i] = { ...selected };
-								} else {
-									armors[i] = {
-										id: "",
-										name: "",
-										defense: "",
-										soak: "",
-										encumbrance: "",
-										hardPoints: "",
-										special: "",
-									};
-								}
-							}}
-						>
-							<option value=""></option>
-							{#each availableArmor as aa}
-								<option value={aa.id}>{aa.name}</option>
-							{/each}
-						</select>
+				{#each armors as a, i}
+					<div class="weapon-row">
+						<div class="weapon-cell left">
+							<select
+								value={a.id || ""}
+								onchange={(e) => {
+									const selectedId = e.currentTarget.value;
+									const selected = availableArmor.find(
+										(aa) => aa.id === selectedId,
+									);
+									if (selected) {
+										armors[i] = { ...selected };
+									} else {
+										armors[i] = {
+											id: "",
+											name: "",
+											defense: "",
+											soak: "",
+											encumbrance: "",
+											hardPoints: "",
+											special: "",
+										};
+									}
+								}}
+							>
+								<option value=""></option>
+								{#each availableArmor as aa}
+									<option value={aa.id}>{aa.name}</option>
+								{/each}
+							</select>
+						</div>
+						<div class="divider"></div>
+						<div class="weapon-cell readonly-text">
+							{a.defense || ""}
+						</div>
+						<div class="divider"></div>
+						<div class="weapon-cell readonly-text">
+							{a.soak || ""}
+						</div>
+						<div class="divider"></div>
+						<div class="weapon-cell readonly-text">
+							{a.encumbrance || ""}
+						</div>
+						<div class="divider"></div>
+						<div class="weapon-cell readonly-text">
+							{a.hardPoints || ""}
+						</div>
+						<div class="divider"></div>
+						<div class="weapon-cell left readonly-text">
+							{a.special || ""}
+						</div>
 					</div>
-					<div class="divider"></div>
-					<div class="weapon-cell readonly-text">
-						{a.defense || ""}
-					</div>
-					<div class="divider"></div>
-					<div class="weapon-cell readonly-text">
-						{a.soak || ""}
-					</div>
-					<div class="divider"></div>
-					<div class="weapon-cell readonly-text">
-						{a.encumbrance || ""}
-					</div>
-					<div class="divider"></div>
-					<div class="weapon-cell readonly-text">
-						{a.hardPoints || ""}
-					</div>
-					<div class="divider"></div>
-					<div class="weapon-cell left readonly-text">
-						{a.special || ""}
-					</div>
-				</div>
-			{/each}
+				{/each}
 
-			<div class="add-row">
-				<button class="btn-add" onclick={() => (isAdding = true)}>
-					+ Add Global Armor
-				</button>
+				<div class="add-row">
+					<button class="btn-add" onclick={() => (isAdding = true)}>
+						+ Add Global Armor
+					</button>
+				</div>
 			</div>
 		</div>
 
-		{#if isAdding}
+		{#if onAddArmor && isAdding}
 			<div class="add-weapon-form">
 				<h4 class="form-title">Create Global Armor</h4>
 				<div class="form-grid">
@@ -262,6 +265,7 @@
 		padding-top: 1.5rem;
 		display: flex;
 		flex-direction: column;
+		min-width: 0;
 	}
 
 	/* We use a grid matching the number of columns.
@@ -473,5 +477,30 @@
 	.btn-save:disabled {
 		opacity: 0.5;
 		cursor: not-allowed;
+	}
+
+	@media (max-width: 768px) {
+		.table-scroll-wrapper {
+			overflow-x: auto;
+			overflow-y: hidden;
+		}
+		
+		.weapons-header-row,
+		.weapon-row {
+			min-width: 600px; /* Minimum width to prevent squishing */
+		}
+
+		.form-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.span-2 {
+			grid-column: 1 / -1;
+		}
+
+		.form-actions {
+			width: 100%;
+			justify-content: center;
+		}
 	}
 </style>

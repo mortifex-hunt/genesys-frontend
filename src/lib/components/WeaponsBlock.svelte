@@ -78,7 +78,9 @@
 	</div>
 
 	<div class="weapons-block">
-		<!-- Column Headers -->
+		<!-- Table Scroll Wrapper -->
+		<div class="table-scroll-wrapper">
+			<!-- Column Headers -->
 		<div class="weapons-header-row">
 			<div class="col-lbl left-align">WEAPON</div>
 			<div></div>
@@ -153,6 +155,7 @@
 					<div class="row-divider"></div>
 				{/if}
 			{/each}
+		</div>
 		</div>
 
 		{#if onAddWeapon}
@@ -256,6 +259,7 @@
 		padding: 2rem 1.5rem 1.5rem 1.5rem;
 		box-shadow: var(--shadow-premium);
 		border: 1.5px solid var(--color-line-brand);
+		min-width: 0;
 	}
 
 	.weapons-header-row,
@@ -417,5 +421,34 @@
 		background-color: transparent;
 		border: 1px solid var(--color-line-brand);
 		color: var(--color-text-brand);
+	}
+
+	.add-weapon-form input:focus {
+		border-color: var(--color-focus);
+	}
+
+	@media (max-width: 768px) {
+		.table-scroll-wrapper {
+			overflow-x: auto;
+			overflow-y: hidden;
+		}
+		
+		.weapons-header-row,
+		.weapon-row {
+			min-width: 600px; /* Minimum width to prevent squishing */
+		}
+
+		.add-weapon-form {
+			flex-direction: column;
+		}
+
+		.add-weapon-form input {
+			width: 100%;
+		}
+
+		.form-actions {
+			width: 100%;
+			justify-content: center;
+		}
 	}
 </style>

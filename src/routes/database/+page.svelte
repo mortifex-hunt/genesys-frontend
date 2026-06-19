@@ -3,6 +3,7 @@
   import { onMount } from "svelte";
   import { get } from "svelte/store";
   import ThemeButton from "$lib/components/small-components/ThemeButton.svelte";
+  import { env } from "$env/dynamic/public";
 
   let dbData = $state<any>(null);
   let errorMsg = $state("");
@@ -19,7 +20,8 @@
     }
 
     const hostname = window.location.hostname;
-    const apiBase = `http://${hostname}:3000/api/admin/database`;
+    const backendUrl = env.PUBLIC_BACKEND_URL || `http://${hostname}:3000`;
+    const apiBase = `${backendUrl}/api/admin/database`;
 
     try {
       const res = await fetch(apiBase, {

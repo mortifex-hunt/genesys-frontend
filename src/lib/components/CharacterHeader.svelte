@@ -167,4 +167,21 @@
 			transition: none;
 		}
 	}
+
+	@media (max-width: 768px) {
+		.input-row {
+			flex-direction: column;
+			align-items: flex-start;
+			padding: 0.75rem 1rem;
+		}
+
+		.input-label {
+			margin-bottom: 0.25rem;
+			font-size: 1rem;
+		}
+
+		.input-field {
+			width: 100%;
+		}
+	}
 </style>
