@@ -1076,6 +1076,8 @@
 			const hostname = window.location.hostname;
 			const backendUrl =
 				env.PUBLIC_BACKEND_URL || `http://${hostname}:3000`;
+			console.log("[DEBUG] env.PUBLIC_BACKEND_URL is:", env.PUBLIC_BACKEND_URL);
+			console.log("[DEBUG] Using backendUrl:", backendUrl);
 			apiBase = `${backendUrl}/api`;
 
 			// Initialize socket connection
