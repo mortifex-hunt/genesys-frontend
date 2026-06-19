@@ -177,4 +177,47 @@
 		);
 		box-shadow: 0 4px 6px rgba(0,0,0,0.3);
 	}
+
+	@media (max-width: 768px) {
+		.characteristics-row {
+			padding: 0 0.25rem;
+			gap: 0.25rem;
+		}
+		.char-circle {
+			width: 50px;
+			height: 50px;
+			margin-bottom: -10px;
+		}
+		.char-circle input {
+			font-size: 1.5rem;
+		}
+		.char-base {
+			font-size: 0.65rem;
+			padding: 15px 2px 6px 2px;
+		}
+		.connection-bar {
+			top: 55%;
+			height: 25px;
+		}
+	}
+
+	@media (max-width: 400px) {
+		.characteristics-row {
+			gap: 0.15rem;
+		}
+		.char-circle {
+			width: 44px;
+			height: 44px;
+		}
+		.char-circle input {
+			font-size: 1.25rem;
+		}
+		.char-base {
+			font-size: 0.55rem;
+			padding: 12px 1px 4px 1px;
+		}
+		.connection-bar {
+			height: 20px;
+		}
+	}
 </style>

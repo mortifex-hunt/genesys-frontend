@@ -12,6 +12,7 @@
 	import CharacterDetailsSheet from "$lib/components/sheet-details/CharacterDetailsSheet.svelte";
 	import { auth, logout } from "$lib/stores/auth";
 	import { get } from "svelte/store";
+	import { env } from "$env/dynamic/public";
 
 	const currentUser = get(auth).user;
 
@@ -200,7 +201,9 @@
 	}
 
 	// API and list states
-	let apiBase = $state("http://localhost:3000/api");
+	let apiBase = $state(
+		env.PUBLIC_BACKEND_URL ? `${env.PUBLIC_BACKEND_URL}/api` : "http://localhost:3000/api"
+	);
 	let charactersList = $state<any[]>([]);
 	let availableWeapons = $state<WeaponItem[]>([]);
 	let availableArmor = $state<ArmorItem[]>([]);
@@ -846,11 +849,12 @@
 
 		if (typeof window !== "undefined") {
 			const hostname = window.location.hostname;
-			apiBase = `http://${hostname}:3000/api`;
+			const backendUrl = env.PUBLIC_BACKEND_URL || `http://${hostname}:3000`;
+			apiBase = `${backendUrl}/api`;
 
 			// Initialize socket connection
 			const token = get(auth).token;
-			socket = io(`http://${hostname}:3000`, {
+			socket = io(backendUrl, {
 				withCredentials: true,
 				auth: { token },
 			});
@@ -1319,6 +1323,7 @@
 	.tabs-container {
 		display: flex;
 		justify-content: center;
+		flex-wrap: wrap;
 		gap: 1rem;
 		margin: -0.5rem 0 1rem 0;
 	}

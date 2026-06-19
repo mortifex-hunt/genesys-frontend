@@ -371,7 +371,7 @@
 	/* Columns Grid */
 	.skills-grid {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 		gap: 1.5rem;
 		width: 100%;
 		border-top: 2px solid var(--color-line-brand);
@@ -380,7 +380,7 @@
 
 	@media (max-width: 768px) {
 		.skills-grid {
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr);
 		}
 	}
 
@@ -388,6 +388,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1.5rem;
+		min-width: 0;
 	}
 
 	/* Card / Category Group Blocks */
@@ -398,9 +399,11 @@
 		border: 1.5px solid var(--color-line-brand);
 		border-radius: 6px;
 		box-shadow: var(--shadow-premium);
-		overflow: hidden;
+		overflow-x: auto;
+		overflow-y: hidden;
 		display: flex;
 		flex-direction: column;
+		min-width: 0;
 	}
 
 	/* Table Category Header Row */
@@ -411,6 +414,7 @@
 		background-color: var(--color-card-bg);
 		border-bottom: 1.5px solid var(--color-line-brand);
 		padding: 0.4rem 0.75rem;
+		min-width: 380px; /* Forces scroll on very small screens */
 	}
 
 	.category-block:has(.btn-delete-skill) .category-header-row {
@@ -448,6 +452,7 @@
 		padding: 0.35rem 0.75rem;
 		border-bottom: 1px dashed rgba(63, 82, 93, 0.15);
 		transition: background-color 0.2s;
+		min-width: 380px;
 	}
 
 	.skill-row:has(.btn-delete-skill) {

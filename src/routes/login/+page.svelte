@@ -3,6 +3,7 @@
   import { goto } from "$app/navigation";
   import ThemeButton from "$lib/components/small-components/ThemeButton.svelte";
   import { onMount } from "svelte";
+  import { env } from "$env/dynamic/public";
 
   let username = $state("");
   let password = $state("");
@@ -26,7 +27,8 @@
     isLoading = true;
 
     const hostname = window.location.hostname;
-    const apiBase = `http://${hostname}:3000/api/auth`;
+    const backendUrl = env.PUBLIC_BACKEND_URL || `http://${hostname}:3000`;
+    const apiBase = `${backendUrl}/api/auth`;
 
     const endpoint = isLogin ? "/login" : "/register";
 

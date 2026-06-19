@@ -52,13 +52,21 @@ body {
 	font-family: var(--font-body);
 	background-color: var(--color-bg-page);
 	color: var(--color-text-dark);
-	min-height: 100vh;
 	display: flex;
 	flex-direction: column;
-	justify-content: center;
 	align-items: center;
+	justify-content: center;
+	min-height: 100vh;
 	padding: 2rem;
-	transition: background-color 0.3s, color 0.3s;
+	transition:
+		background-color 0.3s,
+		color 0.3s;
+}
+
+@media (max-width: 768px) {
+	body {
+		padding: 0.5rem;
+	}
 }
 
 /* Scrollbar styling */
