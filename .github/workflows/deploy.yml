@@ -55,5 +55,4 @@ jobs:
           image: '${{ env.IMAGE }}:${{ github.sha }}'
           env_vars: |
             NODE_ENV=production
-            PORT=8080
             PUBLIC_BACKEND_URL=${{ secrets.PUBLIC_BACKEND_URL }}
