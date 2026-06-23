@@ -1094,7 +1094,7 @@
 			});
 
 			socket.on("character-state", async (data: any) => {
-				if (data.id !== characterId) return;
+				if (data.id !== characterId && data.id !== selectedId) return;
 				updatingFromServer = true;
 				characterName = data.characterName || "";
 				speciesArchetype = data.speciesArchetype || "";
@@ -1292,7 +1292,7 @@
 					id="character-select"
 					class="character-select"
 					bind:value={selectedId}
-					onchange={() => loadCharacter(selectedId)}
+					onchange={(e) => loadCharacter(e.currentTarget.value)}
 					aria-label="Select Character Profile"
 				>
 					<option value="" disabled selected
