@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Tooltip from './Tooltip.svelte';
 	let {
 		brawn = $bindable(2),
 		agility = $bindable(2),
@@ -6,6 +7,7 @@
 		cunning = $bindable(2),
 		willpower = $bindable(2),
 		presence = $bindable(2),
+		globalCharacteristics = [] as any[]
 	} = $props();
 
 	// Array for rendering the layout
@@ -17,6 +19,10 @@
 		{ id: 'willpower', label: 'WILLPOWER', bind: () => willpower, set: (v: number) => willpower = v },
 		{ id: 'presence', label: 'PRESENCE', bind: () => presence, set: (v: number) => presence = v },
 	];
+
+	function getCharData(label: string) {
+		return globalCharacteristics.find(c => c.name.toLowerCase() === label.toLowerCase());
+	}
 </script>
 
 <div class="characteristics-container">
@@ -29,22 +35,35 @@
 
 	<div class="characteristics-row">
 		{#each chars as char}
-			<div class="char-module">
-				<!-- Circle for value -->
-				<div class="char-circle">
-					<input 
-						type="number" 
-						min="1" 
-						max="6" 
-						value={char.bind()} 
-						oninput={(e) => char.set(parseInt(e.currentTarget.value) || 0)}
-					/>
+			{@const charData = getCharData(char.label)}
+			<Tooltip direction="bottom" class="char-module-wrapper">
+				<div class="char-module">
+					<!-- Circle for value -->
+					<div class="char-circle">
+						<input 
+							type="number" 
+							min="1" 
+							max="6" 
+							value={char.bind()} 
+							oninput={(e) => char.set(parseInt(e.currentTarget.value) || 0)}
+						/>
+					</div>
+					<!-- Blue base shape for label -->
+					<div class="char-base">
+						{char.label}
+					</div>
 				</div>
-				<!-- Blue base shape for label -->
-				<div class="char-base">
-					{char.label}
-				</div>
-			</div>
+				{#snippet tooltipBody()}
+					{#if charData?.data?.description}
+						<h4>{charData.name}</h4>
+						{#each charData.data.description as p}
+							<p>{p}</p>
+						{/each}
+					{:else}
+						<p>{char.label}</p>
+					{/if}
+				{/snippet}
+			</Tooltip>
 		{/each}
 	</div>
 </div>
@@ -95,13 +114,19 @@
 		gap: 0.5rem;
 	}
 
+	:global(.char-module-wrapper) {
+		flex: 1;
+		max-width: 120px;
+		display: flex !important;
+		justify-content: center;
+	}
+
 	.char-module {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		position: relative;
-		flex: 1;
-		max-width: 120px;
+		width: 100%;
 	}
 
 	.char-circle {

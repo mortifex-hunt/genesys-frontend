@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Tooltip from './Tooltip.svelte';
 	// Inline type definition matching backend schema
 	interface Skill {
 		name: string;
@@ -16,7 +17,14 @@
 	}
 
 	// Svelte 5 runes for binding skills state
-	let { skills = $bindable<Skill[]>([]) } = $props();
+	let { 
+		skills = $bindable<Skill[]>([]),
+		globalSkills = [] as any[]
+	} = $props();
+
+	function getSkillData(name: string) {
+		return globalSkills.find(s => s.name.toLowerCase() === name.toLowerCase());
+	}
 
 	// Groups
 	const groups = [
@@ -115,16 +123,41 @@
 
 					<div class="category-list">
 						{#each groupSkills as skill}
+							{@const skillData = getSkillData(skill.name)}
 							<div
 								class="skill-row"
 								class:inactive-row={!skill.isSetting}
 							>
-								<div class="skill-info">
+								<Tooltip class="skill-info" direction="right">
 									<span class="skill-name">{skill.name}</span>
-									<span class="skill-char"
-										>({skill.characteristic})</span
-									>
-								</div>
+									<span class="skill-char">({skill.characteristic})</span>
+									{#snippet tooltipBody()}
+										{#if skillData?.data?.description}
+											<h4>{skillData.name}</h4>
+											{#each skillData.data.description as p}
+												<p>{p}</p>
+											{/each}
+											{#if skillData.data.shouldUse?.length}
+												<h4>Should Use:</h4>
+												<ul>
+													{#each skillData.data.shouldUse as su}
+														<li>{su}</li>
+													{/each}
+												</ul>
+											{/if}
+											{#if skillData.data.shouldNotUse?.length}
+												<h4>Should Not Use:</h4>
+												<ul>
+													{#each skillData.data.shouldNotUse as snu}
+														<li>{snu}</li>
+													{/each}
+												</ul>
+											{/if}
+										{:else}
+											<p>{skill.name}</p>
+										{/if}
+									{/snippet}
+								</Tooltip>
 
 								<!-- Setting Toggle (Dotted Circle) -->
 								<div class="toggle-cell">
@@ -208,6 +241,7 @@
 
 					<div class="category-list">
 						{#each groupSkills as skill, idx}
+							{@const skillData = getSkillData(skill.name)}
 							<div
 								class="skill-row"
 								class:inactive-row={!skill.isSetting}
@@ -236,14 +270,36 @@
 										</select>
 									</div>
 								{:else}
-									<div class="skill-info">
-										<span class="skill-name"
-											>{skill.name}</span
-										>
-										<span class="skill-char"
-											>({skill.characteristic})</span
-										>
-									</div>
+									<Tooltip class="skill-info" direction="left">
+										<span class="skill-name">{skill.name}</span>
+										<span class="skill-char">({skill.characteristic})</span>
+										{#snippet tooltipBody()}
+											{#if skillData?.data?.description}
+												<h4>{skillData.name}</h4>
+												{#each skillData.data.description as p}
+													<p>{p}</p>
+												{/each}
+												{#if skillData.data.shouldUse?.length}
+													<h4>Should Use:</h4>
+													<ul>
+														{#each skillData.data.shouldUse as su}
+															<li>{su}</li>
+														{/each}
+													</ul>
+												{/if}
+												{#if skillData.data.shouldNotUse?.length}
+													<h4>Should Not Use:</h4>
+													<ul>
+														{#each skillData.data.shouldNotUse as snu}
+															<li>{snu}</li>
+														{/each}
+													</ul>
+												{/if}
+											{:else}
+												<p>{skill.name}</p>
+											{/if}
+										{/snippet}
+									</Tooltip>
 								{/if}
 
 								<!-- Setting Toggle (Dotted Circle) -->
@@ -399,8 +455,7 @@
 		border: 1.5px solid var(--color-line-brand);
 		border-radius: 6px;
 		box-shadow: var(--shadow-premium);
-		overflow-x: auto;
-		overflow-y: hidden;
+		overflow: visible;
 		display: flex;
 		flex-direction: column;
 		min-width: 0;
@@ -471,10 +526,11 @@
 		opacity: 0.45;
 	}
 
-	.skill-info {
+	:global(.skill-info) {
 		display: flex;
 		align-items: baseline;
 		gap: 0.35rem;
+		cursor: help;
 	}
 
 	.skill-name {

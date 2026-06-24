@@ -243,6 +243,8 @@
 	let availableWeapons = $state<WeaponItem[]>([]);
 	let availableArmor = $state<ArmorItem[]>([]);
 	let globalInjuries = $state<any[]>([]);
+	let globalSkills = $state<any[]>([]);
+	let globalCharacteristics = $state<any[]>([]);
 	let isConnected = $state(false);
 	let selectedId = $state("default-char");
 
@@ -359,6 +361,34 @@
 			}
 		} catch (e) {
 			console.error("Failed to fetch global injuries", e);
+		}
+	}
+
+	async function refreshReferenceData() {
+		try {
+			const cachedSkills = localStorage.getItem("genesys_skills");
+			if (cachedSkills) {
+				globalSkills = JSON.parse(cachedSkills);
+			} else {
+				const res = await fetch(`${apiBase}/content/skills`);
+				if (res.ok) {
+					globalSkills = await res.json();
+					localStorage.setItem("genesys_skills", JSON.stringify(globalSkills));
+				}
+			}
+
+			const cachedChars = localStorage.getItem("genesys_characteristics");
+			if (cachedChars) {
+				globalCharacteristics = JSON.parse(cachedChars);
+			} else {
+				const res = await fetch(`${apiBase}/content/characteristics`);
+				if (res.ok) {
+					globalCharacteristics = await res.json();
+					localStorage.setItem("genesys_characteristics", JSON.stringify(globalCharacteristics));
+				}
+			}
+		} catch (e) {
+			console.error("Failed to fetch reference data", e);
 		}
 	}
 
@@ -1165,6 +1195,7 @@
 			await refreshWeapons();
 			await refreshArmor();
 			await refreshGlobalInjuries();
+			await refreshReferenceData();
 
 			// If characters list has items, load the first one, otherwise default-char
 			if (charactersList.length > 0) {
@@ -1497,10 +1528,11 @@
 			bind:cunning
 			bind:willpower
 			bind:presence
+			{globalCharacteristics}
 		/>
 
 		<!-- Skills Section -->
-		<SkillsSheet bind:skills />
+		<SkillsSheet bind:skills {globalSkills} />
 
 		<!-- Weapons Section -->
 		<WeaponsBlock
