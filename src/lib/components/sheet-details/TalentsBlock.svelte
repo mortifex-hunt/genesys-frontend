@@ -126,11 +126,11 @@
 					<input type="text" bind:value={talent.page} />
 				</div>
 				<div class="cell-summary">
-					{#if desc}
-						<Tooltip direction="top" class="talent-tooltip-wrapper">
-							<input type="text" bind:value={talent.summary} />
-							{#snippet tooltipBody()}
-								<h4>{talent.name}</h4>
+					<Tooltip direction="top" class="talent-tooltip-wrapper">
+						<input type="text" bind:value={talent.summary} />
+						{#snippet tooltipBody()}
+							<h4>{talent.name || "Talent"}</h4>
+							{#if desc}
 								{#if Array.isArray(desc)}
 									{#each desc as p}
 										<p>{p}</p>
@@ -138,11 +138,13 @@
 								{:else}
 									<p>{desc}</p>
 								{/if}
-							{/snippet}
-						</Tooltip>
-					{:else}
-						<input type="text" bind:value={talent.summary} />
-					{/if}
+							{:else if talent.summary}
+								<p>{talent.summary}</p>
+							{:else}
+								<p>No description provided.</p>
+							{/if}
+						{/snippet}
+					</Tooltip>
 				</div>
 				<div class="cell-del">
 					<button type="button" class="btn-del" onclick={() => removeTalent(i)}>&times;</button>
