@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Tooltip from "../Tooltip.svelte";
 	import ItemSelectionModal from "../ItemSelectionModal.svelte";
+	import { env } from "$env/dynamic/public";
 
 	interface Talent {
 		name: string;
@@ -25,6 +26,49 @@
 	);
 
 	let isModalOpen = $state(false);
+	let isCreateModalOpen = $state(false);
+	let newTalentName = $state("");
+	let newTalentSummary = $state("");
+	let isSaving = $state(false);
+
+	let apiBase = "http://localhost:3000/api";
+	if (typeof window !== "undefined") {
+		const hostname = window.location.hostname;
+		const backendUrl = env.PUBLIC_BACKEND_URL || `http://${hostname}:3000`;
+		apiBase = `${backendUrl}/api`;
+	}
+
+	async function saveGlobalTalent() {
+		if (!newTalentName.trim()) return;
+		isSaving = true;
+		try {
+			const res = await fetch(`${apiBase}/content/custom-talents`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					name: newTalentName,
+					data: { description: newTalentSummary }
+				})
+			});
+			if (res.ok) {
+				const savedTalent = await res.json();
+				// Push directly to global options to update UI immediately
+				globalTalents.push(savedTalent);
+				// Also add it directly to character
+				handleTalentSelect(savedTalent);
+				isCreateModalOpen = false;
+				isModalOpen = false;
+				newTalentName = "";
+				newTalentSummary = "";
+			} else {
+				console.error("Failed to save global talent");
+			}
+		} catch (e) {
+			console.error("Error saving global talent:", e);
+		} finally {
+			isSaving = false;
+		}
+	}
 
 	function addCustomTalent() {
 		talents = [...talents, { name: "", page: "", summary: "" }];
@@ -123,6 +167,12 @@
 	items={combinedOptions}
 	onSelect={handleTalentSelect}
 >
+	{#snippet controls()}
+		<button class="btn-create-global" onclick={() => isCreateModalOpen = true}>
+			🌐 Create New Global
+		</button>
+	{/snippet}
+
 	{#snippet header()}
 		<div class="talent-modal-header">
 			<div class="modal-col-name">NAME</div>
@@ -174,6 +224,34 @@
 		</div>
 	{/snippet}
 </ItemSelectionModal>
+
+{#if isCreateModalOpen}
+	<div class="create-modal-backdrop" onclick={() => isCreateModalOpen = false} onkeydown={(e) => e.key === 'Escape' && (isCreateModalOpen = false)} tabindex="0" role="button">
+		<div class="create-modal-content" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+			<div class="create-modal-header">
+				<h2>Create Global Talent</h2>
+				<button type="button" class="close-btn" onclick={() => isCreateModalOpen = false}>&times;</button>
+			</div>
+			<div class="create-modal-body">
+				<p class="create-help-text">This will save a new talent to the database, making it permanently available in the search modal for all characters.</p>
+				<div class="form-group">
+					<label for="talent-name">Talent Name</label>
+					<input id="talent-name" type="text" bind:value={newTalentName} placeholder="e.g. Master of Shadows" />
+				</div>
+				<div class="form-group">
+					<label for="talent-summary">Description / Summary</label>
+					<textarea id="talent-summary" bind:value={newTalentSummary} placeholder="Full description of what the talent does..."></textarea>
+				</div>
+				<div class="create-modal-actions">
+					<button type="button" class="btn-cancel" onclick={() => isCreateModalOpen = false}>Cancel</button>
+					<button type="button" class="btn-save" onclick={saveGlobalTalent} disabled={!newTalentName.trim() || isSaving}>
+						{isSaving ? "Saving..." : "💾 Save to Database"}
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+{/if}
 
 <style>
 	.talents-container {
@@ -348,5 +426,167 @@
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
+	}
+
+	/* Create Global Talent Modal Styles */
+	.btn-create-global {
+		background-color: var(--color-brand);
+		color: white;
+		border: none;
+		border-radius: 4px;
+		padding: 0.5rem 1rem;
+		font-family: var(--font-brand);
+		font-weight: 700;
+		cursor: pointer;
+		white-space: nowrap;
+		transition: background-color 0.2s;
+	}
+
+	.btn-create-global:hover {
+		background-color: var(--color-brand-light, #1c5280);
+	}
+
+	.create-modal-backdrop {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: rgba(0, 0, 0, 0.7);
+		backdrop-filter: blur(4px);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 1100;
+		padding: 1rem;
+	}
+
+	.create-modal-content {
+		background-color: var(--color-card-bg);
+		border: 1.5px solid var(--color-line-brand);
+		border-radius: 8px;
+		width: 100%;
+		max-width: 500px;
+		box-shadow: var(--shadow-premium);
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.create-modal-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 1.25rem 1.5rem;
+		border-bottom: 1px solid var(--color-line-brand);
+		background-image: var(--bg-cross-pattern);
+		background-size: 60px 104px;
+	}
+
+	.create-modal-header h2 {
+		margin: 0;
+		font-family: var(--font-brand);
+		color: var(--color-text-brand);
+		font-size: 1.25rem;
+	}
+
+	.close-btn {
+		background: none;
+		border: none;
+		color: var(--color-text-dark);
+		font-size: 2rem;
+		line-height: 1;
+		cursor: pointer;
+		padding: 0;
+	}
+
+	.close-btn:hover {
+		color: var(--color-text-brand);
+	}
+
+	.create-modal-body {
+		padding: 1.5rem;
+		display: flex;
+		flex-direction: column;
+		gap: 1.25rem;
+	}
+
+	.create-help-text {
+		margin: 0;
+		font-size: 0.85rem;
+		color: #aaa;
+		font-style: italic;
+	}
+
+	.form-group {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.form-group label {
+		font-family: var(--font-brand);
+		color: var(--color-text-brand);
+		font-size: 0.85rem;
+		font-weight: 700;
+	}
+
+	.form-group input, .form-group textarea {
+		background: rgba(0, 0, 0, 0.2);
+		border: 1px solid var(--color-line-brand);
+		border-radius: 4px;
+		color: white;
+		padding: 0.75rem;
+		font-family: var(--font-body);
+		font-size: 1rem;
+	}
+
+	.form-group input:focus, .form-group textarea:focus {
+		outline: none;
+		border-color: var(--color-rust);
+	}
+
+	.form-group textarea {
+		min-height: 120px;
+		resize: vertical;
+	}
+
+	.create-modal-actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: 1rem;
+		margin-top: 0.5rem;
+	}
+
+	.btn-cancel, .btn-save {
+		padding: 0.5rem 1rem;
+		font-family: var(--font-brand);
+		font-weight: 700;
+		border-radius: 4px;
+		cursor: pointer;
+		border: none;
+	}
+
+	.btn-cancel {
+		background: transparent;
+		color: #999;
+	}
+
+	.btn-cancel:hover {
+		color: white;
+	}
+
+	.btn-save {
+		background: var(--color-rust);
+		color: white;
+	}
+
+	.btn-save:hover:not(:disabled) {
+		background: #eb8c39;
+	}
+
+	.btn-save:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
 	}
 </style>

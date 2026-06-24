@@ -8,6 +8,7 @@
 		onSelect,
 		row,
 		header,
+		controls,
 	}: {
 		isOpen: boolean;
 		title: string;
@@ -15,6 +16,7 @@
 		onSelect: (item: T | null) => void;
 		row: Snippet<[T]>;
 		header?: Snippet;
+		controls?: Snippet;
 	} = $props();
 
 	let searchQuery = $state("");
@@ -68,6 +70,9 @@
 					<option value="name_asc">Name (A-Z)</option>
 					<option value="name_desc">Name (Z-A)</option>
 				</select>
+				{#if controls}
+					{@render controls()}
+				{/if}
 			</div>
 
 			<div class="modal-body">
