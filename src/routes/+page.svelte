@@ -1473,53 +1473,55 @@
 		/>
 	{/if}
 
-	<section class="state-inspector">
-		<h2 class="inspector-title">Reactive State Inspector</h2>
-		<div class="inspector-grid">
-			<div class="state-item">
-				<span class="state-label">Profile ID:</span>
-				<span class="state-value code-font">{characterId}</span>
+	{#if isDev}
+		<section class="state-inspector">
+			<h2 class="inspector-title">Reactive State Inspector</h2>
+			<div class="inspector-grid">
+				<div class="state-item">
+					<span class="state-label">Profile ID:</span>
+					<span class="state-value code-font">{characterId}</span>
+				</div>
+				<div class="state-item">
+					<span class="state-label">Name:</span>
+					<span class="state-value">{characterName || "—"}</span>
+				</div>
+				<div class="state-item">
+					<span class="state-label">Species/Archetype:</span>
+					<span class="state-value">{speciesArchetype || "—"}</span>
+				</div>
+				<div class="state-item">
+					<span class="state-label">Career:</span>
+					<span class="state-value">{career || "—"}</span>
+				</div>
+				<div class="state-item">
+					<span class="state-label">Player:</span>
+					<span class="state-value">{player || "—"}</span>
+				</div>
+				<div class="state-item">
+					<span class="state-label">Soak:</span>
+					<span class="state-value">{soakValue}</span>
+				</div>
+				<div class="state-item">
+					<span class="state-label">Wounds:</span>
+					<span class="state-value"
+						>{woundsCurrent} / {woundsThreshold}</span
+					>
+				</div>
+				<div class="state-item">
+					<span class="state-label">Strain:</span>
+					<span class="state-value"
+						>{strainCurrent} / {strainThreshold}</span
+					>
+				</div>
+				<div class="state-item">
+					<span class="state-label">Defense:</span>
+					<span class="state-value"
+						>R: {defenseRanged} | M: {defenseMelee}</span
+					>
+				</div>
 			</div>
-			<div class="state-item">
-				<span class="state-label">Name:</span>
-				<span class="state-value">{characterName || "—"}</span>
-			</div>
-			<div class="state-item">
-				<span class="state-label">Species/Archetype:</span>
-				<span class="state-value">{speciesArchetype || "—"}</span>
-			</div>
-			<div class="state-item">
-				<span class="state-label">Career:</span>
-				<span class="state-value">{career || "—"}</span>
-			</div>
-			<div class="state-item">
-				<span class="state-label">Player:</span>
-				<span class="state-value">{player || "—"}</span>
-			</div>
-			<div class="state-item">
-				<span class="state-label">Soak:</span>
-				<span class="state-value">{soakValue}</span>
-			</div>
-			<div class="state-item">
-				<span class="state-label">Wounds:</span>
-				<span class="state-value"
-					>{woundsCurrent} / {woundsThreshold}</span
-				>
-			</div>
-			<div class="state-item">
-				<span class="state-label">Strain:</span>
-				<span class="state-value"
-					>{strainCurrent} / {strainThreshold}</span
-				>
-			</div>
-			<div class="state-item">
-				<span class="state-label">Defense:</span>
-				<span class="state-value"
-					>R: {defenseRanged} | M: {defenseMelee}</span
-				>
-			</div>
-		</div>
-	</section>
+		</section>
+	{/if}
 </main>
 
 <style>
