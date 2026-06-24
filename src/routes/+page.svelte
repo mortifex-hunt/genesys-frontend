@@ -539,58 +539,8 @@
 					willpower = data.willpower ?? 2;
 					presence = data.presence ?? 2;
 					skills = ensureSkillsArray(data.skills);
-					weapons = data.weapons || [
-						{
-							name: "",
-							skill: "",
-							damage: "",
-							crit: "",
-							range: "",
-							special: "",
-						},
-						{
-							name: "",
-							skill: "",
-							damage: "",
-							crit: "",
-							range: "",
-							special: "",
-						},
-						{
-							name: "",
-							skill: "",
-							damage: "",
-							crit: "",
-							range: "",
-							special: "",
-						},
-					];
-					armors = data.armors || [
-						{
-							name: "",
-							defense: "",
-							soak: "",
-							encumbrance: "",
-							hardPoints: "",
-							special: "",
-						},
-						{
-							name: "",
-							defense: "",
-							soak: "",
-							encumbrance: "",
-							hardPoints: "",
-							special: "",
-						},
-						{
-							name: "",
-							defense: "",
-							soak: "",
-							encumbrance: "",
-							hardPoints: "",
-							special: "",
-						},
-					];
+					weapons = ensureWeaponsArray(data.weapons);
+					armors = ensureArmorsArray(data.armors);
 					motivations = data.motivations || {
 						strength: "",
 						flaw: "",
