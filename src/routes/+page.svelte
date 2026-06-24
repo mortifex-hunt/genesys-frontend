@@ -245,6 +245,7 @@
 	let globalInjuries = $state<any[]>([]);
 	let globalSkills = $state<any[]>([]);
 	let globalCharacteristics = $state<any[]>([]);
+	let globalQualities = $state<any[]>([]);
 	let isConnected = $state(false);
 	let selectedId = $state("default-char");
 
@@ -385,6 +386,17 @@
 				if (res.ok) {
 					globalCharacteristics = await res.json();
 					localStorage.setItem("genesys_characteristics", JSON.stringify(globalCharacteristics));
+				}
+			}
+
+			const cachedQualities = localStorage.getItem("genesys_qualities");
+			if (cachedQualities) {
+				globalQualities = JSON.parse(cachedQualities);
+			} else {
+				const res = await fetch(`${apiBase}/content/qualities`);
+				if (res.ok) {
+					globalQualities = await res.json();
+					localStorage.setItem("genesys_qualities", JSON.stringify(globalQualities));
 				}
 			}
 		} catch (e) {
@@ -1539,10 +1551,16 @@
 			bind:weapons
 			{availableWeapons}
 			onAddWeapon={handleAddWeapon}
+			{globalQualities}
 		/>
 
 		<!-- Armor Section -->
-		<ArmorBlock bind:armors {availableArmor} onAddArmor={handleAddArmor} />
+		<ArmorBlock 
+			bind:armors 
+			{availableArmor} 
+			onAddArmor={handleAddArmor} 
+			{globalQualities} 
+		/>
 	{:else}
 		<CharacterDetailsSheet
 			bind:motivations

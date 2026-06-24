@@ -1,5 +1,7 @@
 <script lang="ts">
 	import ItemSelectionModal from "./ItemSelectionModal.svelte";
+	import ItemEditModal from "./ItemEditModal.svelte";
+	import Tooltip from "./Tooltip.svelte";
 
 	interface WeaponItem {
 		id?: string;
@@ -42,6 +44,7 @@
 			},
 		]),
 		availableWeapons = [] as WeaponItem[],
+		globalQualities = [] as any[],
 		onAddWeapon = undefined as
 			| ((weapon: Omit<WeaponItem, "id">) => void)
 			| undefined,
@@ -58,7 +61,25 @@
 	});
 
 	let isModalOpen = $state(false);
+	let isEditModalOpen = $state(false);
 	let activeRowIndex = $state<number | null>(null);
+
+	function parseSpecials(specialString: string) {
+		if (!specialString) return [];
+		return specialString.split(',').map(s => s.trim()).filter(s => s.length > 0);
+	}
+
+	function getQualityData(specialText: string) {
+		const baseName = specialText.replace(/[0-9]+/, '').trim().toLowerCase();
+		let match = globalQualities.find(q => q.name.toLowerCase() === specialText.toLowerCase());
+		if (!match) {
+			match = globalQualities.find(q => q.name.toLowerCase() === baseName);
+		}
+		if (!match && baseName === "stun setting") {
+			match = globalQualities.find(q => q.name.toLowerCase() === "stun");
+		}
+		return match;
+	}
 
 	function submitWeapon() {
 		if (onAddWeapon && newWeapon.name.trim() !== "") {
@@ -90,6 +111,12 @@
 					special: "",
 				};
 			}
+		}
+	}
+
+	function handleEditSave(updatedItem: any) {
+		if (activeRowIndex !== null) {
+			weapons[activeRowIndex] = updatedItem;
 		}
 	}
 </script>
@@ -124,10 +151,15 @@
 		<div class="weapons-body">
 			{#each weapons as w, i}
 				<div class="weapon-row">
-					<div class="weapon-cell left">
+					<div class="weapon-cell left weapon-name-cell">
 						<button class="weapon-select-btn" onclick={() => { activeRowIndex = i; isModalOpen = true; }}>
 							{w.name || "Select Weapon..."}
 						</button>
+						{#if w.name}
+							<button class="btn-edit-item" onclick={() => { activeRowIndex = i; isEditModalOpen = true; }} aria-label="Edit Weapon">
+								✎
+							</button>
+						{/if}
 					</div>
 					<div class="divider"></div>
 					<div class="weapon-cell readonly-text">
@@ -146,8 +178,30 @@
 						{w.range || ""}
 					</div>
 					<div class="divider"></div>
-					<div class="weapon-cell left readonly-text">
-						{w.special || ""}
+					<div class="weapon-cell left readonly-text special-cell">
+						{#if w.special}
+							{#each parseSpecials(w.special) as spec, idx}
+								{@const qData = getQualityData(spec)}
+								<Tooltip direction="top" class="special-tooltip-wrapper">
+									<span class="special-pill">{spec}</span>
+									{#snippet tooltipBody()}
+										{#if qData?.data?.description}
+											<h4>{qData.name}</h4>
+											{#each qData.data.description as p}
+												<p>{p}</p>
+											{/each}
+										{:else}
+											<p>{spec}</p>
+										{/if}
+									{/snippet}
+								</Tooltip>
+								{#if idx < parseSpecials(w.special).length - 1}
+									<span class="special-comma">, </span>
+								{/if}
+							{/each}
+						{:else}
+							<span>—</span>
+						{/if}
 					</div>
 				</div>
 				{#if i < weapons.length - 1}
@@ -251,6 +305,14 @@
 		</div>
 	{/snippet}
 </ItemSelectionModal>
+
+<ItemEditModal 
+	bind:isOpen={isEditModalOpen} 
+	itemType="weapon"
+	initialItem={activeRowIndex !== null ? weapons[activeRowIndex] : null}
+	{globalQualities}
+	onSave={handleEditSave}
+/>
 
 <style>
 	.weapons-section {
@@ -357,6 +419,63 @@
 		text-align: center;
 		padding: 0 0.5rem;
 		cursor: pointer;
+	}
+
+	.weapon-name-cell {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding-right: 0.5rem;
+	}
+
+	.btn-edit-item {
+		background: none;
+		border: none;
+		color: #94a3b8;
+		cursor: pointer;
+		font-size: 1rem;
+		padding: 0.2rem 0.4rem;
+		border-radius: 4px;
+		transition: all 0.2s;
+	}
+
+	.btn-edit-item:hover {
+		color: var(--color-rust);
+		background: rgba(255,255,255,0.05);
+	}
+
+	.special-cell {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.2rem;
+	}
+
+	.special-pill {
+		cursor: help;
+		color: #94a3b8;
+		border-bottom: 1px dotted #64748b;
+		transition: color 0.2s;
+	}
+
+	.special-pill:hover {
+		color: var(--color-text-brand);
+		border-bottom-color: var(--color-text-brand);
+	}
+
+	.special-comma {
+		color: #64748b;
+	}
+
+	:global(.special-tooltip-wrapper) {
+		display: inline-flex;
+	}
+
+	.weapon-cell input {
+		background-color: var(--color-card-bg);
+		text-align-last: center;
+		appearance: none;
+		-webkit-appearance: none;
 	}
 
 	.weapon-cell select {
