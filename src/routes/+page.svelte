@@ -238,6 +238,22 @@
 		return defaultSkills;
 	}
 
+	function ensureWeaponsArray(data: any): WeaponItem[] {
+		const arr = Array.isArray(data) ? [...data] : [];
+		while (arr.length < 3) {
+			arr.push({ name: "", skill: "", damage: "", crit: "", range: "", special: "" });
+		}
+		return arr;
+	}
+
+	function ensureArmorsArray(data: any): ArmorItem[] {
+		const arr = Array.isArray(data) ? [...data] : [];
+		while (arr.length < 3) {
+			arr.push({ name: "", defense: "", soak: "", encumbrance: "", hardPoints: "", special: "" });
+		}
+		return arr;
+	}
+
 	// API and list states
 	let apiBase = $state(
 		env.PUBLIC_BACKEND_URL
@@ -639,58 +655,8 @@
 					willpower = char.willpower ?? 2;
 					presence = char.presence ?? 2;
 					skills = ensureSkillsArray(char.skills);
-					weapons = char.weapons || [
-						{
-							name: "",
-							skill: "",
-							damage: "",
-							crit: "",
-							range: "",
-							special: "",
-						},
-						{
-							name: "",
-							skill: "",
-							damage: "",
-							crit: "",
-							range: "",
-							special: "",
-						},
-						{
-							name: "",
-							skill: "",
-							damage: "",
-							crit: "",
-							range: "",
-							special: "",
-						},
-					];
-					armors = char.armors || [
-						{
-							name: "",
-							defense: "",
-							soak: "",
-							encumbrance: "",
-							hardPoints: "",
-							special: "",
-						},
-						{
-							name: "",
-							defense: "",
-							soak: "",
-							encumbrance: "",
-							hardPoints: "",
-							special: "",
-						},
-						{
-							name: "",
-							defense: "",
-							soak: "",
-							encumbrance: "",
-							hardPoints: "",
-							special: "",
-						},
-					];
+					weapons = ensureWeaponsArray(char.weapons);
+					armors = ensureArmorsArray(char.armors);
 					motivations = char.motivations || {
 						strength: "",
 						flaw: "",
@@ -1006,58 +972,8 @@
 		willpower = 2;
 		presence = 2;
 		skills = ensureSkillsArray(null);
-		weapons = [
-			{
-				name: "",
-				skill: "",
-				damage: "",
-				crit: "",
-				range: "",
-				special: "",
-			},
-			{
-				name: "",
-				skill: "",
-				damage: "",
-				crit: "",
-				range: "",
-				special: "",
-			},
-			{
-				name: "",
-				skill: "",
-				damage: "",
-				crit: "",
-				range: "",
-				special: "",
-			},
-		];
-		armors = [
-			{
-				name: "",
-				defense: "",
-				soak: "",
-				encumbrance: "",
-				hardPoints: "",
-				special: "",
-			},
-			{
-				name: "",
-				defense: "",
-				soak: "",
-				encumbrance: "",
-				hardPoints: "",
-				special: "",
-			},
-			{
-				name: "",
-				defense: "",
-				soak: "",
-				encumbrance: "",
-				hardPoints: "",
-				special: "",
-			},
-		];
+		weapons = ensureWeaponsArray(null);
+		armors = ensureArmorsArray(null);
 		motivations = { strength: "", flaw: "", desire: "", fear: "" };
 		description = {
 			gender: "",
@@ -1188,8 +1104,8 @@
 				willpower = data.willpower ?? 2;
 				presence = data.presence ?? 2;
 				skills = ensureSkillsArray(data.skills);
-				if (data.weapons) weapons = data.weapons;
-				if (data.armors) armors = data.armors;
+				weapons = ensureWeaponsArray(data.weapons);
+				armors = ensureArmorsArray(data.armors);
 				if (data.motivations) motivations = data.motivations;
 				if (data.description) description = data.description;
 				if (data.equipment) equipment = data.equipment;
@@ -1222,8 +1138,8 @@
 				willpower = data.willpower ?? 2;
 				presence = data.presence ?? 2;
 				skills = ensureSkillsArray(data.skills);
-				if (data.weapons) weapons = data.weapons;
-				if (data.armors) armors = data.armors;
+				weapons = ensureWeaponsArray(data.weapons);
+				armors = ensureArmorsArray(data.armors);
 				await tick();
 				updatingFromServer = false;
 			});
