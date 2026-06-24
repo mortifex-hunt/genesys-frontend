@@ -46,6 +46,8 @@
 		notes = $bindable<string>(""),
 		criticalInjuries = $bindable<CriticalInjury[]>([]),
 		talents = $bindable<Talent[]>([]),
+		globalTalents = [] as any[],
+		globalAbilities = [] as any[],
 		globalInjuries = [] as any[]
 	} = $props();
 </script>
@@ -63,7 +65,7 @@
 
 	<div class="bottom-split">
 		<InjuriesNotesBlock bind:notes bind:criticalInjuries {globalInjuries} />
-		<TalentsBlock bind:talents />
+		<TalentsBlock bind:talents {globalTalents} {globalAbilities} />
 	</div>
 </div>
 

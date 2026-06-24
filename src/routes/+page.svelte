@@ -174,6 +174,11 @@
 		{ name: "Primal", characteristic: "CUN", category: "Magic" },
 	];
 
+	let isDev = typeof window !== 'undefined' && (
+		window.location.href.includes("localhost") ||
+		window.location.href.includes("[IP_ADDRESS]")
+	);
+
 	function getDefaultSkills(): Skill[] {
 		return STANDARD_SKILLS.map((s) => ({
 			name: s.name,
@@ -246,6 +251,8 @@
 	let globalSkills = $state<any[]>([]);
 	let globalCharacteristics = $state<any[]>([]);
 	let globalQualities = $state<any[]>([]);
+	let globalTalents = $state<any[]>([]);
+	let globalAbilities = $state<any[]>([]);
 	let isConnected = $state(false);
 	let selectedId = $state("default-char");
 
@@ -397,6 +404,30 @@
 				if (res.ok) {
 					globalQualities = await res.json();
 					localStorage.setItem("genesys_qualities", JSON.stringify(globalQualities));
+				}
+			}
+
+			// Talents
+			const cachedTalents = localStorage.getItem("genesys_talents");
+			if (cachedTalents) {
+				globalTalents = JSON.parse(cachedTalents);
+			} else {
+				const res = await fetch(`${apiBase}/content/talents`);
+				if (res.ok) {
+					globalTalents = await res.json();
+					localStorage.setItem("genesys_talents", JSON.stringify(globalTalents));
+				}
+			}
+
+			// Abilities
+			const cachedAbilities = localStorage.getItem("genesys_abilities");
+			if (cachedAbilities) {
+				globalAbilities = JSON.parse(cachedAbilities);
+			} else {
+				const res = await fetch(`${apiBase}/content/abilities`);
+				if (res.ok) {
+					globalAbilities = await res.json();
+					localStorage.setItem("genesys_abilities", JSON.stringify(globalAbilities));
 				}
 			}
 		} catch (e) {
@@ -1569,6 +1600,8 @@
 			bind:notes
 			bind:criticalInjuries
 			bind:talents
+			{globalTalents}
+			{globalAbilities}
 			{globalInjuries}
 		/>
 	{/if}

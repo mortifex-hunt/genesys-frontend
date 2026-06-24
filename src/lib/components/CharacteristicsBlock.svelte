@@ -73,10 +73,14 @@
 		position: relative;
 		margin: 2rem 0;
 		padding-top: 1.5rem;
+		padding-bottom: 1.5rem;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		width: 100%;
+		background-color: var(--color-card-bg);
+		border: 1.5px solid var(--color-line-brand);
+		border-radius: 4px;
 	}
 
 	.header-banner {

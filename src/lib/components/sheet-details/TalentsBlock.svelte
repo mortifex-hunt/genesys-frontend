@@ -1,4 +1,7 @@
 <script lang="ts">
+	import Tooltip from "../Tooltip.svelte";
+	import ItemSelectionModal from "../ItemSelectionModal.svelte";
+
 	interface Talent {
 		name: string;
 		page: string;
@@ -13,14 +16,48 @@
 			{ name: "", page: "", summary: "" },
 			{ name: "", page: "", summary: "" },
 		]),
+		globalTalents = [] as any[],
+		globalAbilities = [] as any[]
 	} = $props();
 
-	function addTalent() {
+	let combinedOptions = $derived(
+		[...globalTalents, ...globalAbilities].sort((a, b) => a.name.localeCompare(b.name))
+	);
+
+	let isModalOpen = $state(false);
+
+	function addCustomTalent() {
 		talents = [...talents, { name: "", page: "", summary: "" }];
 	}
 
 	function removeTalent(index: number) {
 		talents = talents.filter((_, i) => i !== index);
+	}
+
+	function handleTalentSelect(selectedItem: any) {
+		if (selectedItem) {
+			let summary = "";
+			if (selectedItem.data && selectedItem.data.description) {
+				if (Array.isArray(selectedItem.data.description)) {
+					summary = selectedItem.data.description[0];
+				} else if (typeof selectedItem.data.description === 'string') {
+					summary = selectedItem.data.description;
+				}
+			}
+
+			const emptyIndex = talents.findIndex(t => !t.name && !t.page && !t.summary);
+			if (emptyIndex !== -1) {
+				talents[emptyIndex] = { name: selectedItem.name, page: "", summary };
+			} else {
+				talents = [...talents, { name: selectedItem.name, page: "", summary }];
+			}
+		}
+	}
+
+	function getFullDescription(name: string) {
+		if (!name) return null;
+		const match = combinedOptions.find(o => o.name.toLowerCase() === name.toLowerCase());
+		return match?.data?.description;
 	}
 </script>
 
@@ -36,6 +73,7 @@
 
 	<div class="talents-list">
 		{#each talents as talent, i}
+			{@const desc = getFullDescription(talent.name)}
 			<div class="talent-row">
 				<div class="cell-name">
 					<input type="text" bind:value={talent.name} />
@@ -44,7 +82,23 @@
 					<input type="text" bind:value={talent.page} />
 				</div>
 				<div class="cell-summary">
-					<input type="text" bind:value={talent.summary} />
+					{#if desc}
+						<Tooltip direction="top" class="talent-tooltip-wrapper">
+							<input type="text" bind:value={talent.summary} />
+							{#snippet tooltipBody()}
+								<h4>{talent.name}</h4>
+								{#if Array.isArray(desc)}
+									{#each desc as p}
+										<p>{p}</p>
+									{/each}
+								{:else}
+									<p>{desc}</p>
+								{/if}
+							{/snippet}
+						</Tooltip>
+					{:else}
+						<input type="text" bind:value={talent.summary} />
+					{/if}
 				</div>
 				<div class="cell-del">
 					<button type="button" class="btn-del" onclick={() => removeTalent(i)}>&times;</button>
@@ -54,9 +108,72 @@
 	</div>
 
 	<div class="add-row">
-		<button type="button" class="btn-add" onclick={addTalent}>+ Add Talent</button>
+		<button type="button" class="btn-add search-btn" onclick={() => isModalOpen = true}>
+			🔍 Search Database
+		</button>
+		<button type="button" class="btn-add custom-btn" onclick={addCustomTalent}>
+			+ Add Custom
+		</button>
 	</div>
 </div>
+
+<ItemSelectionModal
+	bind:isOpen={isModalOpen}
+	title="Select Talent or Ability"
+	items={combinedOptions}
+	onSelect={handleTalentSelect}
+>
+	{#snippet header()}
+		<div class="talent-modal-header">
+			<div class="modal-col-name">NAME</div>
+			<div class="modal-col-summary">SUMMARY</div>
+		</div>
+	{/snippet}
+
+	{#snippet row(item)}
+		{@const desc = item.data?.description}
+		<div class="talent-modal-row">
+			<div class="modal-col-name">
+				<span style="font-weight: 600; color: var(--color-text-brand);">{item.name}</span>
+			</div>
+			<div class="modal-col-summary">
+				{#if desc}
+					<Tooltip direction="top" class="talent-tooltip-wrapper">
+						<div class="summary-text">
+							{#if Array.isArray(item.data?.description)}
+								{item.data.description[0]}
+							{:else if typeof item.data?.description === 'string'}
+								{item.data.description}
+							{:else}
+								—
+							{/if}
+						</div>
+						{#snippet tooltipBody()}
+							<h4>{item.name}</h4>
+							{#if Array.isArray(desc)}
+								{#each desc as p}
+									<p>{p}</p>
+								{/each}
+							{:else}
+								<p>{desc}</p>
+							{/if}
+						{/snippet}
+					</Tooltip>
+				{:else}
+					<div class="summary-text">
+						{#if Array.isArray(item.data?.description)}
+							{item.data.description[0]}
+						{:else if typeof item.data?.description === 'string'}
+							{item.data.description}
+						{:else}
+							—
+						{/if}
+					</div>
+				{/if}
+			</div>
+		</div>
+	{/snippet}
+</ItemSelectionModal>
 
 <style>
 	.talents-container {
@@ -160,6 +277,7 @@
 		padding: 0.5rem;
 		display: flex;
 		justify-content: center;
+		gap: 1rem;
 		border-top: 1.5px dashed var(--color-line-brand);
 	}
 
@@ -177,5 +295,58 @@
 	.btn-add:hover {
 		background: var(--color-line-brand);
 		color: var(--color-bg-page);
+	}
+
+	.search-btn {
+		border-color: var(--color-text-brand);
+		background: rgba(255, 255, 255, 0.05);
+	}
+
+	:global(.talent-tooltip-wrapper) {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+	}
+
+	/* Modal Snippet Styles */
+	.talent-modal-header {
+		display: flex;
+		padding: 0.5rem 1rem;
+		background: rgba(255, 255, 255, 0.05);
+		font-family: var(--font-brand);
+		font-size: 0.8rem;
+		font-weight: 700;
+		color: var(--color-text-brand);
+		border-bottom: 1px solid var(--color-line-brand);
+	}
+
+	.talent-modal-row {
+		display: flex;
+		width: 100%;
+		padding: 0.75rem 1rem;
+		align-items: center;
+	}
+
+	.modal-col-name {
+		width: 30%;
+		padding-right: 1rem;
+		display: flex;
+		align-items: center;
+	}
+
+	.modal-col-summary {
+		flex: 1;
+		font-size: 0.85rem;
+		color: #ccc;
+		text-align: left;
+		min-width: 0;
+	}
+
+	.summary-text {
+		width: 100%;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 </style>
