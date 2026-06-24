@@ -1158,6 +1158,7 @@
 			socket = io(backendUrl, {
 				withCredentials: true,
 				auth: { token },
+				transports: ["websocket"]
 			});
 
 			socket.on("connect", () => {
