@@ -1,4 +1,6 @@
 <script lang="ts">
+	import ItemSelectionModal from "./ItemSelectionModal.svelte";
+
 	interface WeaponItem {
 		id?: string;
 		name: string;
@@ -55,6 +57,9 @@
 		special: "",
 	});
 
+	let isModalOpen = $state(false);
+	let activeRowIndex = $state<number | null>(null);
+
 	function submitWeapon() {
 		if (onAddWeapon && newWeapon.name.trim() !== "") {
 			onAddWeapon({ ...newWeapon });
@@ -67,6 +72,24 @@
 				special: "",
 			};
 			isAdding = false;
+		}
+	}
+
+	function handleSelect(item: WeaponItem | null) {
+		if (activeRowIndex !== null) {
+			if (item) {
+				weapons[activeRowIndex] = { ...item };
+			} else {
+				weapons[activeRowIndex] = {
+					id: "",
+					name: "",
+					skill: "",
+					damage: "",
+					crit: "",
+					range: "",
+					special: "",
+				};
+			}
 		}
 	}
 </script>
@@ -102,33 +125,9 @@
 			{#each weapons as w, i}
 				<div class="weapon-row">
 					<div class="weapon-cell left">
-						<select
-							value={w.id || ""}
-							onchange={(e) => {
-								const selectedId = e.currentTarget.value;
-								const selected = availableWeapons.find(
-									(aw) => aw.id === selectedId,
-								);
-								if (selected) {
-									weapons[i] = { ...selected };
-								} else {
-									weapons[i] = {
-										id: "",
-										name: "",
-										skill: "",
-										damage: "",
-										crit: "",
-										range: "",
-										special: "",
-									};
-								}
-							}}
-						>
-							<option value=""></option>
-							{#each availableWeapons as aw}
-								<option value={aw.id}>{aw.name}</option>
-							{/each}
-						</select>
+						<button class="weapon-select-btn" onclick={() => { activeRowIndex = i; isModalOpen = true; }}>
+							{w.name || "Select Weapon..."}
+						</button>
 					</div>
 					<div class="divider"></div>
 					<div class="weapon-cell readonly-text">
@@ -212,6 +211,46 @@
 		{/if}
 	</div>
 </div>
+
+<ItemSelectionModal
+	bind:isOpen={isModalOpen}
+	title="Select Weapon"
+	items={availableWeapons}
+	onSelect={handleSelect}
+>
+	{#snippet header()}
+		<div class="weapons-header-row" style="margin: 0; padding: 0 0.5rem;">
+			<div class="col-lbl left-align">WEAPON</div>
+			<div></div>
+			<div class="col-lbl">SKILL</div>
+			<div></div>
+			<div class="col-lbl">DAMAGE</div>
+			<div></div>
+			<div class="col-lbl">CRIT</div>
+			<div></div>
+			<div class="col-lbl">RANGE</div>
+			<div></div>
+			<div class="col-lbl left-align" style="padding-left: 1rem;">
+				SPECIAL
+			</div>
+		</div>
+	{/snippet}
+	{#snippet row(w)}
+		<div class="weapon-row" style="border: none; width: 100%;">
+			<div class="weapon-cell left" style="font-weight: 600; color: var(--color-text-brand);">{w.name}</div>
+			<div class="divider"></div>
+			<div class="weapon-cell readonly-text">{w.skill || ""}</div>
+			<div class="divider"></div>
+			<div class="weapon-cell readonly-text">{w.damage || ""}</div>
+			<div class="divider"></div>
+			<div class="weapon-cell readonly-text">{w.crit || ""}</div>
+			<div class="divider"></div>
+			<div class="weapon-cell readonly-text">{w.range || ""}</div>
+			<div class="divider"></div>
+			<div class="weapon-cell left readonly-text">{w.special || ""}</div>
+		</div>
+	{/snippet}
+</ItemSelectionModal>
 
 <style>
 	.weapons-section {
@@ -304,31 +343,37 @@
 		justify-content: center;
 	}
 
-	.weapon-cell select {
+	.weapon-cell select,
+	.weapon-select-btn {
 		width: 100%;
 		height: 100%;
 		border: none;
 		outline: none;
 		background: transparent;
-		background-color: var(--color-card-bg);
 		font-family: var(--font-body);
 		font-size: 0.95rem;
 		font-weight: 600;
 		color: var(--color-text-dark);
 		text-align: center;
-		text-align-last: center;
 		padding: 0 0.5rem;
+		cursor: pointer;
 	}
 
 	.weapon-cell select {
-		cursor: pointer;
+		background-color: var(--color-card-bg);
+		text-align-last: center;
 		appearance: none;
 		-webkit-appearance: none;
 	}
 
-	.weapon-cell.left select {
+	.weapon-cell.left select,
+	.weapon-cell.left .weapon-select-btn {
 		text-align: left;
 		text-align-last: left;
+	}
+
+	.weapon-select-btn:hover {
+		color: var(--color-text-brand);
 	}
 
 	.divider {

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import ItemSelectionModal from "./ItemSelectionModal.svelte";
 	interface ArmorItem {
 		id?: string;
 		name: string;
@@ -55,6 +56,9 @@
 		special: "",
 	});
 
+	let isModalOpen = $state(false);
+	let activeRowIndex = $state<number | null>(null);
+
 	function submitArmor() {
 		if (onAddArmor && newArmor.name.trim() !== "") {
 			onAddArmor({ ...newArmor });
@@ -67,6 +71,24 @@
 				special: "",
 			};
 			isAdding = false;
+		}
+	}
+
+	function handleSelect(item: ArmorItem | null) {
+		if (activeRowIndex !== null) {
+			if (item) {
+				armors[activeRowIndex] = { ...item };
+			} else {
+				armors[activeRowIndex] = {
+					id: "",
+					name: "",
+					defense: "",
+					soak: "",
+					encumbrance: "",
+					hardPoints: "",
+					special: "",
+				};
+			}
 		}
 	}
 </script>
@@ -102,33 +124,9 @@
 				{#each armors as a, i}
 					<div class="weapon-row">
 						<div class="weapon-cell left">
-							<select
-								value={a.id || ""}
-								onchange={(e) => {
-									const selectedId = e.currentTarget.value;
-									const selected = availableArmor.find(
-										(aa) => aa.id === selectedId,
-									);
-									if (selected) {
-										armors[i] = { ...selected };
-									} else {
-										armors[i] = {
-											id: "",
-											name: "",
-											defense: "",
-											soak: "",
-											encumbrance: "",
-											hardPoints: "",
-											special: "",
-										};
-									}
-								}}
-							>
-								<option value=""></option>
-								{#each availableArmor as aa}
-									<option value={aa.id}>{aa.name}</option>
-								{/each}
-							</select>
+							<button class="weapon-select-btn" onclick={() => { activeRowIndex = i; isModalOpen = true; }}>
+								{a.name || "Select Armor..."}
+							</button>
 						</div>
 						<div class="divider"></div>
 						<div class="weapon-cell readonly-text">
@@ -236,6 +234,46 @@
 	</div>
 </div>
 
+<ItemSelectionModal
+	bind:isOpen={isModalOpen}
+	title="Select Armor"
+	items={availableArmor}
+	onSelect={handleSelect}
+>
+	{#snippet header()}
+		<div class="weapons-header-row" style="margin: 0; padding: 0 0.5rem;">
+			<div class="col-lbl left-align">ARMOR</div>
+			<div></div>
+			<div class="col-lbl">DEFENSE</div>
+			<div></div>
+			<div class="col-lbl">SOAK</div>
+			<div></div>
+			<div class="col-lbl">ENCUMBRANCE</div>
+			<div></div>
+			<div class="col-lbl">HARD POINTS</div>
+			<div></div>
+			<div class="col-lbl left-align" style="padding-left: 1rem;">
+				SPECIAL
+			</div>
+		</div>
+	{/snippet}
+	{#snippet row(a)}
+		<div class="weapon-row" style="border: none; width: 100%;">
+			<div class="weapon-cell left" style="font-weight: 600; color: var(--color-text-brand);">{a.name}</div>
+			<div class="divider"></div>
+			<div class="weapon-cell readonly-text">{a.defense || ""}</div>
+			<div class="divider"></div>
+			<div class="weapon-cell readonly-text">{a.soak || ""}</div>
+			<div class="divider"></div>
+			<div class="weapon-cell readonly-text">{a.encumbrance || ""}</div>
+			<div class="divider"></div>
+			<div class="weapon-cell readonly-text">{a.hardPoints || ""}</div>
+			<div class="divider"></div>
+			<div class="weapon-cell left readonly-text">{a.special || ""}</div>
+		</div>
+	{/snippet}
+</ItemSelectionModal>
+
 <style>
 	.weapons-section {
 		position: relative;
@@ -329,7 +367,8 @@
 	}
 
 	.weapon-cell select,
-	.weapon-cell input {
+	.weapon-cell input,
+	.weapon-select-btn {
 		width: 100%;
 		background: transparent;
 		border: none;
@@ -337,6 +376,18 @@
 		font-family: var(--font-body);
 		font-size: 0.95rem;
 		outline: none;
+	}
+
+	.weapon-cell select,
+	.weapon-select-btn {
+		cursor: pointer;
+		text-align: center;
+		padding: 0 0.5rem;
+		font-weight: 600;
+	}
+
+	.weapon-select-btn:hover {
+		color: var(--color-text-brand);
 	}
 
 	.weapon-cell select {
@@ -348,6 +399,12 @@
 	.weapon-cell select option {
 		background: var(--color-bg-page);
 		color: var(--color-text-dark);
+	}
+
+	.weapon-cell.left select,
+	.weapon-cell.left .weapon-select-btn {
+		text-align: left;
+		text-align-last: left;
 	}
 
 	.readonly-text {
